@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nofap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+      gap: 5px;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    .day {
+      width: 40px;
+      height: 40px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      border: 1px solid #ccc;
+      user-select: none;
+    }
+    .clean { background-color: #7CFC00; color: #fff; }
+    .mo    { background-color: #FFD700; color: #000; }
+    .pmo   { background-color: #FF4500; color: #fff; }
+  </style>
+</head>
+<body>
+  <h1>Nofap</h1>
+  <div class="calendar" id="calendar"></div>
+
+  <script>
+    const calendar = document.getElementById('calendar');
+    const startDate = new Date("2025-04-12");
+    const days = 90;
+    const states = ['', 'clean', 'mo', 'pmo'];
+    const labels = ['', 'я', 'мо', 'пмо'];
+
+    function getSavedState(index) {
+      return localStorage.getItem('nofap_day_' + index) || '';
+    }
+
+    function saveState(index, state) {
+      localStorage.setItem('nofap_day_' + index, state);
+    }
+
+    for (let i = 0; i < days; i++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'day';
+      dayDiv.title = date.toLocaleDateString();
+      dayDiv.dataset.index = i;
+      let currentState = getSavedState(i);
+      if (currentState) {
+        dayDiv.classList.add(currentState);
+        dayDiv.textContent = labels[states.indexOf(currentState)];
+      }
+
+      dayDiv.addEventListener('click', () => {
+        const currentIndex = states.indexOf(dayDiv.classList[1] || '');
+        const nextIndex = (currentIndex + 1) % states.length;
+        const nextState = states[nextIndex];
+
+        dayDiv.className = 'day';
+        dayDiv.textContent = '';
+
+        if (nextState) {
+          dayDiv.classList.add(nextState);
+          dayDiv.textContent = labels[nextIndex];
+        }
+        saveState(i, nextState);
+      });
+
+      calendar.appendChild(dayDiv);
+    }
+  </script>
+</body>
+</html>
